@@ -1,10 +1,11 @@
-# r3f-vite-starter
-A boilerplate to build R3F projects
+# Hologram Material
+Hologram material experiment. The hologram uses a tiled texture, fresnel lighting, diffuse lighting with view direction & surface normals. For the best effect use a smoother model than the Suzanne that is included and test the bias and factor.
+
+to use:
 
 ```
-yarn
-yarn dev
+npm install
+
+npm run dev
 ```
 
-
-![image](https://user-images.githubusercontent.com/6551176/221732091-23ee52cb-4150-42fa-b998-43628d7a6b0d.png)
