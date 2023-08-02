@@ -28,14 +28,14 @@ export function Suzanne(props)
       },
       FresnelFactor:
       {
-        value: 0.5,
+        value: 4.0,
         min: 0,
         max: 30,
         step: 0.001
       },
       FresnelBias:
       {
-        value: 1,
+        value: 0.35,
         min: 0,
         max: 1,
         step: 0.001
