@@ -17,7 +17,7 @@ import { useControls } from 'leva'
 export function Suzanne(props) 
 {
 
-  const { speed, FresnelFactor, FresnelBias } = useControls(
+  const { speed, FresnelFactor, FresnelBias, FresnelIntensity } = useControls(
     {
       speed:
       {
@@ -39,6 +39,13 @@ export function Suzanne(props)
         min: 0,
         max: 1,
         step: 0.001
+      },
+      FresnelIntensity:
+      {
+        value: 0,
+        min: 0,
+        max: 50,
+        step: 0.001
       }
     }
   )
@@ -53,7 +60,8 @@ export function Suzanne(props)
   uAnimationSpeed: { value: speed },
   uRimColor: { value: new Color( 0x02FEFF ) },
   uFresnelFactor: { value: FresnelFactor },
-  uFresnelBias: { value: FresnelBias }
+  uFresnelBias: { value: FresnelBias },
+  uIntensity: { value: FresnelIntensity },
 
 }
 
@@ -69,12 +77,13 @@ void main()
 {
 
   vec4 worldPosition = modelMatrix * vec4( position, 1.0 );
+  vec4 worldNormal = modelMatrix * vec4( normal, 0.0 );
 
   vObjectPosition = worldPosition.xyz;
 
   vUv = uv;
   vView = normalize( cameraPosition - worldPosition.xyz );
-  vNormal = normalize( normalMatrix * normal );
+  vNormal = normalize( worldNormal.xyz );
 
   gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 
@@ -92,6 +101,7 @@ uniform float uAnimationSpeed;
 uniform float uFresnelFactor;
 uniform float uFresnelBias;
 uniform vec3 uRimColor;
+uniform float uIntensity;
 
 in vec3 vObjectPosition;
 in vec2 vUv;
@@ -140,12 +150,21 @@ void main()
 
   float alphaClip = holoLines.r * holoLines.b * holoLines.g; // determine what parts to show
 
-  /* final color */
+  /* final color 
+  //
+  //
+  //
+  */
 
+  // diffuse color
   float diffuse = dot(vNormal, vView );
+  vec3 diffuseColor = uColor * diffuse;
+
+  // fresnel color
+  vec3 fresnelColor = uRimColor * fresnel * uIntensity;
 
   vec3 color = vec3(0.);
-  color = diffuse * holoLines * uColor + fresnel * uRimColor; // color lines
+  color = diffuseColor * holoLines + fresnelColor; // color lines
 
   gl_FragColor = vec4( color, alphaClip ); // output color
 
@@ -165,7 +184,7 @@ const hologramShader = new ShaderMaterial(
 
 const model = useRef()
 
-  const { nodes } = useGLTF('./models/lowpoly/suzanne.glb')
+  const { nodes } = useGLTF('./models/highpoly/Monkey.glb')
 
   useFrame( ( state ) =>
   {
@@ -173,19 +192,21 @@ const model = useRef()
     model.current.material.uniforms.uTime.value = state.clock.elapsedTime
     model.current.material.uniforms.uFresnelFactor.value = FresnelFactor
     model.current.material.uniforms.uFresnelBias.value = FresnelBias
+    model.current.material.uniforms.uIntensity.value = FresnelIntensity
 
   })
 
   return (
-    <group {...props} dispose={null}>
+    <group { ...props } dispose={ null }>
       <mesh
         ref={ model }
-        geometry={nodes.Object_4.geometry}
-        material={hologramShader}
+        geometry={ nodes.Suzanne.geometry }
+        material={ hologramShader }
+        rotation-y={ 180 * Math.PI / 180 }
       />
     </group>
   )
 
 }
 
-useGLTF.preload('./models/lowpoly/suzanne.glb')
+useGLTF.preload('./models/highpoly/Monkey.glb')
