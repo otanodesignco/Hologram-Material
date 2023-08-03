@@ -5,7 +5,8 @@ export const Experience = () =>
 {
   return (
     <>
-      <Suzanne />
+      <Suzanne
+      />
     </>
   );
 };

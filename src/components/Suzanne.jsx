@@ -17,6 +17,8 @@ import { useControls } from 'leva'
 export function Suzanne(props) 
 {
 
+  const alpha = props.alpha ? props.alpha : false
+
   const { speed, FresnelFactor, FresnelBias, FresnelIntensity } = useControls(
     {
       speed:
@@ -162,13 +164,15 @@ void main()
   float diffuse = dot(vNormal, vView );
   vec3 diffuseColor = uColor * diffuse;
 
+  float alpha = ${ alpha ? 'fresnel' : 1.0.toFixed(1) };
+
   // fresnel color
   vec3 fresnelColor = uRimColor * fresnel * uIntensity;
 
   vec3 color = vec3(0.);
   color = diffuseColor * holoLines + fresnelColor; // color lines
 
-  gl_FragColor = vec4( color, fresnel ); // output color
+  gl_FragColor = vec4( color, alpha ); // output color
 
 }
 
@@ -180,7 +184,7 @@ const hologramShader = new ShaderMaterial(
     vertexShader: vertex,
     fragmentShader: fragment,
     uniforms: uniforms,
-    transparent: true,
+    transparent: { alpha },
   }
 )
 
