@@ -21,28 +21,28 @@ export function Suzanne(props)
     {
       speed:
       {
-        value: 10,
+        value: 15,
         min: 1,
         max: 30,
         step: 0.001
       },
       FresnelFactor:
       {
-        value: 4.0,
+        value: 3.0,
         min: 0,
         max: 30,
         step: 0.001
       },
       FresnelBias:
       {
-        value: 0.35,
-        min: 0,
+        value: 0.10,
+        min: -1,
         max: 1,
         step: 0.001
       },
       FresnelIntensity:
       {
-        value: 0,
+        value: 1.50,
         min: 0,
         max: 50,
         step: 0.001
@@ -150,6 +150,8 @@ void main()
 
   float alphaClip = holoLines.r * holoLines.b * holoLines.g; // determine what parts to show
 
+  if( alphaClip < 0.1 ) discard;
+
   /* final color 
   //
   //
@@ -166,7 +168,7 @@ void main()
   vec3 color = vec3(0.);
   color = diffuseColor * holoLines + fresnelColor; // color lines
 
-  gl_FragColor = vec4( color, alphaClip ); // output color
+  gl_FragColor = vec4( color, fresnel ); // output color
 
 }
 
