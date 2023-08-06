@@ -131,7 +131,9 @@ void main()
 
   //float diffuse = clamp( clamp( normal, ), 0., 1. );
 
-  vec2 uv = gl_FragCoord.xy / uResolution; // screen coordinates
+  //vec2 uv = gl_FragCoord.xy / uResolution; // screen coordinates
+
+  vec2 uv = vObjectPosition.xy;
 
   float animationOffset = mod( time * ( uAnimationSpeed * 0.01 ), 1.0 ); // animation calculation that repeats
 
@@ -209,6 +211,7 @@ const model = useRef()
         geometry={ nodes.Suzanne.geometry }
         material={ hologramShader }
         rotation-y={ 180 * Math.PI / 180 }
+        
       />
     </group>
   )
