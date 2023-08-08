@@ -9,7 +9,7 @@ Title: High Poly Blender Monkey (Suzanne)
 
 import React, { useRef } from 'react'
 import { useGLTF, useTexture } from '@react-three/drei'
-import { ShaderMaterial, Vector2, Color } from 'three'
+import { ShaderMaterial, Vector2, Color, TorusGeometry, BoxGeometry } from 'three'
 import { useFrame } from '@react-three/fiber'
 import { useControls } from 'leva'
 
@@ -19,7 +19,7 @@ export function Suzanne(props)
 
   const alpha = props.alpha ? props.alpha : false
 
-  const { speed, FresnelFactor, FresnelBias, FresnelIntensity } = useControls(
+  const { speed, FresnelFactor, FresnelBias, FresnelIntensity, rimColor, bodyColor } = useControls(
     {
       speed:
       {
@@ -48,6 +48,14 @@ export function Suzanne(props)
         min: 0,
         max: 50,
         step: 0.001
+      },
+      rimColor:
+      {
+        value: '#02FEFF'
+      },
+      bodyColor:
+      {
+        value: '#FF88FE'
       }
     }
   )
@@ -131,9 +139,9 @@ void main()
 
   //float diffuse = clamp( clamp( normal, ), 0., 1. );
 
-  //vec2 uv = gl_FragCoord.xy / uResolution; // screen coordinates
+  vec2 uv = gl_FragCoord.xy / uResolution; // screen coordinates
 
-  vec2 uv = vObjectPosition.xy;
+  // vec2 uv = vObjectPosition.xy; // creates a line donw the middle, don't use world space position
 
   float animationOffset = mod( time * ( uAnimationSpeed * 0.01 ), 1.0 ); // animation calculation that repeats
 
@@ -201,8 +209,12 @@ const model = useRef()
     model.current.material.uniforms.uFresnelFactor.value = FresnelFactor
     model.current.material.uniforms.uFresnelBias.value = FresnelBias
     model.current.material.uniforms.uIntensity.value = FresnelIntensity
+    model.current.material.uniforms.uColor.value = new Color( bodyColor )
+    model.current.material.uniforms.uRimColor.value = new Color( rimColor )
 
   })
+
+  const geo = new BoxGeometry(2,2,2)
 
   return (
     <group { ...props } dispose={ null }>
