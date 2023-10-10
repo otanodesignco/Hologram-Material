@@ -142,11 +142,18 @@ float randomRange( vec2 Seed, float Min, float Max )
     return mix(Min, Max, randomno);
 }
 
+float shine( float shineSize, float direction, float speed, float time )
+{
+    return step( 1.0 - shineSize * 0.5, 0.5 + 0.5 * sin( direction + time * speed ) );
+}
+
 
 void main()
 {
 
   float time = uTime;
+
+  vec2 objectSpace = vObjectPosition.xy * 0.5 + 0.5;
 
   //float diffuse = clamp( clamp( normal, ), 0., 1. );
 
@@ -183,13 +190,25 @@ void main()
   */
 
   // flicker calculation
-  float flash = flicker( 0.4, uTime );
+  float flash = flicker( 0.5, uTime );
   // flicker color
   vec3 flashColor = vec3(1.0);
   // flicker effect with color
   flashColor *= flash;
 
+  /**
+   * 
+   * Shine Calculations
+   * 
+   */
 
+  // shining calculation
+  float shining = shine( 0.007, objectSpace.y, 3.0, time );
+  
+  // shine color
+  vec3 shineColor = vec3( 1.0 );
+
+  shineColor += shining;
 
   /* final color 
   //
@@ -209,9 +228,12 @@ void main()
   vec3 color = vec3(0.);
   color = (diffuseColor * holoLines + fresnelColor); // color lines
   // mix between the color and the flash effect by an alpha value multipied by the flash calculation
-  color = mix( color, flashColor, flash * 0.4);
+  color = mix( color, flashColor, flash * 0.25);
 
-  gl_FragColor = vec4( color, fresnel ); // output color
+  // mix between fresnel flashing and shine
+  color = mix( color, shineColor, shining * 0.1 );
+
+  gl_FragColor = vec4( color, 0.7 ); // output color
 
 }
 
