@@ -190,7 +190,7 @@ void main()
   */
 
   // flicker calculation
-  float flash = flicker( 0.5, uTime );
+  float flash = flicker( 0.3, uTime );
   // flicker color
   vec3 flashColor = vec3(1.0);
   // flicker effect with color
@@ -227,13 +227,15 @@ void main()
 
   vec3 color = vec3(0.);
   color = (diffuseColor * holoLines + fresnelColor); // color lines
+  //color = diffuseColor + fresnelColor;
   // mix between the color and the flash effect by an alpha value multipied by the flash calculation
   color = mix( color, flashColor, flash * 0.25);
 
   // mix between fresnel flashing and shine
-  color = mix( color, shineColor, shining * 0.1 );
+  color = mix( color, shineColor, shining * 0.2 );
 
-  gl_FragColor = vec4( color, 0.7 ); // output color
+  gl_FragColor = vec4( color, 0.5 ); // output color
+  //gl_FragColor = vec4( fresnelColor, fresnel );
 
 }
 
