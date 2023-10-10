@@ -131,6 +131,17 @@ float fresnelFunc( float factor, float fresnelBias, vec3 normal, vec3 view )
 
 }
 
+float flicker( float amt, float time )
+{
+    return clamp( fract( cos( time ) * 43758.5453123 ), amt, 1.0 );
+}
+
+float randomRange( vec2 Seed, float Min, float Max )
+{
+    float randomno =  fract(sin(dot(Seed, vec2(12.9898, 78.233)))*43758.5453);
+    return mix(Min, Max, randomno);
+}
+
 
 void main()
 {
@@ -164,6 +175,22 @@ void main()
 
   if( alphaClip < 0.1 ) discard;
 
+  /* 
+  //
+  // Flicker Effect
+  //
+  //
+  */
+
+  // flicker calculation
+  float flash = flicker( 0.4, uTime );
+  // flicker color
+  vec3 flashColor = vec3(1.0);
+  // flicker effect with color
+  flashColor *= flash;
+
+
+
   /* final color 
   //
   //
@@ -180,9 +207,11 @@ void main()
   vec3 fresnelColor = uRimColor * fresnel * uIntensity;
 
   vec3 color = vec3(0.);
-  color = diffuseColor * holoLines + fresnelColor; // color lines
+  color = (diffuseColor * holoLines + fresnelColor); // color lines
+  // mix between the color and the flash effect by an alpha value multipied by the flash calculation
+  color = mix( color, flashColor, flash * 0.4);
 
-  gl_FragColor = vec4( color, alpha ); // output color
+  gl_FragColor = vec4( color, fresnel ); // output color
 
 }
 
