@@ -286,7 +286,7 @@ void main()
   color = mix( color, flashColor, flash * 0.06);
 
   // mix between fresnel flashing and shine
-  color = mix( color, shineColor, shining * 0.2 );
+  color = mix( color, shineColor, shining * 0.1 );
 
 
   gl_FragColor = vec4( color, alphaClip * cut * uOpacity  ); // output color

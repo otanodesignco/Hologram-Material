@@ -14,6 +14,7 @@ function App() {
       <OrbitControls makeDefault />
       <color attach="background" args={["#353640"]} />
       <Experience />
+    
     </Canvas>
   );
 }
