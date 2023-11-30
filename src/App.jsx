@@ -2,7 +2,7 @@ import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { Experience } from "./components/Experience";
 import { SRGBColorSpace } from "three";
-import { Bloom, EffectComposer } from "@react-three/postprocessing";
+import { Leva } from "leva";
 
 function App() {
   return (
@@ -12,6 +12,7 @@ function App() {
       gl={{ outputColorSpace: SRGBColorSpace }}
     >
       <OrbitControls makeDefault />
+      {/* <Leva hidden /> */}
       <color attach="background" args={["#353640"]} />
       <Experience />
     </Canvas>
