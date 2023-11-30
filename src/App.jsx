@@ -2,7 +2,7 @@ import { Canvas } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { Experience } from "./components/Experience";
 import { SRGBColorSpace } from "three";
-import { Leva } from "leva";
+import { Bloom, EffectComposer } from "@react-three/postprocessing";
 
 function App() {
   return (
@@ -14,7 +14,12 @@ function App() {
       <OrbitControls makeDefault />
       <color attach="background" args={["#353640"]} />
       <Experience />
-    
+      <EffectComposer>
+        <Bloom
+          luminanceThreshold={0}
+          luminanceSmoothing={0.9}
+        />
+      </EffectComposer>
     </Canvas>
   );
 }
