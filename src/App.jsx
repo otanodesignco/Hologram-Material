@@ -14,12 +14,6 @@ function App() {
       <OrbitControls makeDefault />
       <color attach="background" args={["#353640"]} />
       <Experience />
-      <EffectComposer>
-        <Bloom
-          luminanceThreshold={0}
-          luminanceSmoothing={0.9}
-        />
-      </EffectComposer>
     </Canvas>
   );
 }

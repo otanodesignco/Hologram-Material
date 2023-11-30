@@ -8,7 +8,7 @@ export default function Monkey( props )
 {
     const { nodes } = useGLTF( './models/highpoly/Monkey.glb' )
 
-    const { rimColor, fresnelAmount, rimAlpha, baseColor, animationSpeed, blinking, blinkSpeed, blinkingAlpha, flashing, flashSize, flashSpeed, flashingAlpha, scanlineDirection, flashlineDirection } = useControls(
+    const { rimColor, fresnelAmount, rimAlpha, baseColor, animationSpeed, blinking, blinkSpeed, blinkingAlpha, flashing, flashSize, flashSpeed, flashingAlpha, scanlineDirection, flashlineDirection, intensity } = useControls(
       {
         rimColor:
         {
@@ -87,6 +87,13 @@ export default function Monkey( props )
         flashlineDirection:
         {
           options: ['up', 'down']
+        },
+        intensity:
+        {
+          value: 1,
+          min: 1,
+          max: 5,
+          step: 0.1
         }
       })
 
@@ -115,6 +122,7 @@ export default function Monkey( props )
               flashAlpha={ flashingAlpha }
               scanlineDirection={ scanlineDirection }
               flashingDirection={ flashlineDirection }
+              colorIntensity={ intensity }
             />
             
           </mesh>

@@ -18,7 +18,8 @@ export default function HologramMaterial({
     flashSize = 1, // size of the flash
     flashingDirection = 'down', // direction of flashing animation
     flashingSpeed = 2, // flashing speed
-    flashAlpha = 0.2 // alpha of flash between 0 - 1
+    flashAlpha = 0.2, // alpha of flash between 0 - 1
+    colorIntensity = 1 // fake bloom for cheaper draw calls
 })
 {
     // shader uniforms
@@ -36,7 +37,8 @@ export default function HologramMaterial({
         uFlashSize: flashSize,
         uFlashSpeed: flashingSpeed,
         uBlinkAlpha: blinkAlpha,
-        uFlashAlpha: flashAlpha
+        uFlashAlpha: flashAlpha,
+        uIntensity: colorIntensity
     }
 
     // handle direction logic for scanlines here
@@ -121,6 +123,7 @@ export default function HologramMaterial({
     uniform float uBlinkingSpeed;
     uniform float uFlashSize;
     uniform float uFlashSpeed;
+    uniform float uIntensity;
 
     in vec3 vObjectPosition;
     in vec2 vUv;
@@ -199,7 +202,7 @@ export default function HologramMaterial({
         // flashing layer, hidden by default
         ${ !flashLine ? '': 'finalColor = mix( finalColor, flashColor, flash * clamp( uFlashAlpha, 0., 1. ) );' }
 
-        gl_FragColor = vec4( finalColor, scanlinesAlpha );
+        gl_FragColor = vec4( finalColor * uIntensity, scanlinesAlpha );
     }
 
     `
