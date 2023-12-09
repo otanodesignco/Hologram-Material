@@ -1,7 +1,7 @@
 import React, { useRef } from 'react'
 import { shaderMaterial, useTexture } from '@react-three/drei'
 import { extend, useFrame } from '@react-three/fiber'
-import { Vector2, Color } from 'three'
+import { Vector2, Color, DoubleSide, FrontSide, BackSide } from 'three'
 
 export default function HologramMaterial({
     fresnelColor = 0x02FEFF, // rim light color
@@ -20,7 +20,8 @@ export default function HologramMaterial({
     flashingSpeed = 2, // flashing speed
     flashAlpha = 0.2, // alpha of flash between 0 - 1
     colorIntensity = 1, // fake bloom for cheaper draw calls
-    colorAlpha = 1 // optional alpha for color
+    colorAlpha = 1, // optional alpha for color
+    fadeAmount = 0 // animation amount to fade in
 })
 {
     // shader uniforms
@@ -40,7 +41,8 @@ export default function HologramMaterial({
         uBlinkAlpha: blinkAlpha,
         uFlashAlpha: flashAlpha,
         uIntensity: colorIntensity,
-        uAlpha: colorAlpha
+        uAlpha: colorAlpha,
+        uProgress: fadeAmount
     }
 
     // handle direction logic for scanlines here
@@ -85,10 +87,14 @@ export default function HologramMaterial({
     // vertex shader code
     const vertexShader = /*glsl*/`
 
+    uniform vec2 uResolution;
+    uniform float uTime;
+
     out vec3 vObjectPosition;
     out vec2 vUv;
     out vec3 vView;
     out vec3 vNormal;
+    out vec2 vObjectUV;
 
 
     void main()
@@ -96,8 +102,12 @@ export default function HologramMaterial({
 
     vec4 worldPosition = modelMatrix * vec4( position, 1.0 );
     vec4 worldNormal = modelMatrix * vec4( normal, 0.0 );
+    // calculate object space between 0 - 1
+    vec4 objectUV = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
 
-    vObjectPosition = worldPosition.xyz * 0.5 + 0.5;
+    vObjectUV = worldPosition.xy;
+
+    vObjectPosition = worldPosition.xyz;
 
     vUv = uv;
     vView = normalize( cameraPosition - worldPosition.xyz );
@@ -127,11 +137,13 @@ export default function HologramMaterial({
     uniform float uFlashSpeed;
     uniform float uIntensity;
     uniform float uAlpha;
+    uniform float uProgress;
 
     in vec3 vObjectPosition;
     in vec2 vUv;
     in vec3 vView;
     in vec3 vNormal;
+    in vec2 vObjectUV;
 
     // fresnel function without bias
     float fresnelFunc( float amount, vec3 normal, vec3 view)
@@ -156,10 +168,19 @@ export default function HologramMaterial({
         return dot( normal, viewDirection );
     }
 
+    float map(float value, float min1, float max1, float min2, float max2) 
+    {
+        return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
+    }
+
     void main()
     {
 
-        vec2 uv = gl_FragCoord.xy / uResolution;
+        vec2 uv = gl_FragCoord.xy / uResolution; // view space coords
+
+        vec2 objectUv = vec2( map( vObjectPosition.x, 0.0, 1.0, 0.55, 0.9 ), map( vObjectPosition.y, 0.0, 1.0, 0.55, 0.9 ) ); // corrected positon coordinates for transitons
+
+        float objectYPosition = step( uProgress, objectUv.y );
 
         float colorAlpha = clamp( uAlpha, 0., 1. );
 
@@ -207,7 +228,7 @@ export default function HologramMaterial({
         // flashing layer, hidden by default
         ${ !flashLine ? '': 'finalColor = mix( finalColor, flashColor, flash * clamp( uFlashAlpha, 0., 1. ) );' }
 
-        gl_FragColor = vec4( finalColor * uIntensity, colorAlpha * scanlinesAlpha );
+        gl_FragColor = vec4( finalColor * uIntensity , objectYPosition * colorAlpha * scanlinesAlpha );
     }
 
     `
@@ -232,6 +253,7 @@ export default function HologramMaterial({
         <hologramMaterial
             key={ HologramMaterial.key }
             transparent={ true }
+            side={ FrontSide }
             ref={ holoRef }
         />
     )

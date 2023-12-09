@@ -14,7 +14,7 @@ import { useControls } from "leva";
 export default function ClapTrap(props) {
   const { nodes } = useGLTF("./models/highpoly/cl4p.glb");
 
-  const { rimColor, fresnelAmount, rimAlpha, baseColor, animationSpeed, blinking, blinkSpeed, blinkingAlpha, flashing, flashSize, flashSpeed, flashingAlpha, scanlineDirection, flashlineDirection, intensity, colorAlpha } = useControls(
+  const { rimColor, fresnelAmount, rimAlpha, baseColor, animationSpeed, blinking, blinkSpeed, blinkingAlpha, flashing, flashSize, flashSpeed, flashingAlpha, scanlineDirection, flashlineDirection, intensity, colorAlpha, fadeProgress } = useControls(
     {
       rimColor:
       {
@@ -108,6 +108,13 @@ export default function ClapTrap(props) {
         min: 0,
         max: 1,
         step: 0.1
+      },
+      fadeProgress:
+      {
+        value: 0,
+        min: 0,
+        max: 1,
+        step: 0.01
       }
     })
 
@@ -138,6 +145,7 @@ export default function ClapTrap(props) {
             flashingDirection={ flashlineDirection }
             colorIntensity={ intensity }
             colorAlpha={ colorAlpha }
+            fadeAmount={ fadeProgress }
           />
         </mesh>
         <mesh
@@ -163,6 +171,7 @@ export default function ClapTrap(props) {
               flashingDirection={ flashlineDirection }
               colorIntensity={ intensity }
               colorAlpha={ colorAlpha }
+              fadeAmount={ fadeProgress }
             />
         </mesh>
       </group>

@@ -3,6 +3,7 @@ import { OrbitControls } from "@react-three/drei";
 import { Experience } from "./components/Experience";
 import { SRGBColorSpace } from "three";
 import { Leva } from "leva";
+import { Bloom, EffectComposer } from "@react-three/postprocessing";
 
 function App() {
   return (
@@ -13,8 +14,14 @@ function App() {
     >
       <OrbitControls makeDefault />
       {/* <Leva hidden /> */}
-      <color attach="background" args={["#353640"]} />
+      <color attach="background" args={["#000000"]} />
       <Experience />
+      <EffectComposer>
+        <Bloom
+          luminanceThreshold={15}
+          luminanceSmoothing={ 0.9 }
+        />
+      </EffectComposer>
     </Canvas>
   );
 }
