@@ -165,7 +165,7 @@ export default function HologramMaterial({
 
     float lambertLighting( vec3 normal, vec3 viewDirection )
     {
-        return dot( normal, viewDirection );
+        return max( dot( normal, viewDirection ), 0.0 );
     }
 
     float map(float value, float min1, float max1, float min2, float max2) 
@@ -193,7 +193,7 @@ export default function HologramMaterial({
 
         // create lambert lighting
         float diffuse = lambertLighting( vNormal, vView );
-        vec3 diffuseColor = ( uBaseColor * 2.) * diffuse;
+        vec3 diffuseColor = ( uBaseColor ) * diffuse;
 
         // create hologram scanlines
         vec4 holoTexture = texture( uScanTexture, uv );
