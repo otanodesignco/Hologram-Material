@@ -24,6 +24,7 @@ export default function HologramMaterial({
     fadeAmount = 0, // animation amount to fade in
     fadeDirection = 'top', // direction of the fade either top or bottom
     transitionPatternSize = 10, // size of pattern size
+    patternIntensity = 20, // for bloom
     transitionSize = 0.01 // size of the transition offset
 })
 {
@@ -47,6 +48,7 @@ export default function HologramMaterial({
         uAlpha: colorAlpha,
         uProgress: fadeAmount,
         uPatternSize: transitionPatternSize,
+        uPatternColor: new Color( fresnelColor ).multiplyScalar( patternIntensity ),
         uFadeSize: transitionSize
     }
 
@@ -162,6 +164,7 @@ export default function HologramMaterial({
     uniform float uProgress;
     uniform float uPatternSize;
     uniform float uFadeSize;
+    uniform vec3 uPatternColor;
 
     in vec3 vObjectPosition;
     in vec2 vUv;
@@ -217,7 +220,7 @@ export default function HologramMaterial({
         float squares =  step( 0.7, random( floor( vUv * uPatternSize ) * uProgress ) );
         float direction =  ${ transitionDirection === 1 ? 'objectUv.y': '1.0 - objectUv.y' };
         float transitionRing = step( direction - ( uFadeSize * 0.01 ), uProgress ) * squares;
-        vec3 transitionColor = uFresnelColor * uIntensity;
+        vec3 transitionColor = uPatternColor;
         transitionColor *= transitionRing;
 
         

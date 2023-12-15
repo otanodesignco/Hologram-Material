@@ -14,7 +14,7 @@ import { useControls } from "leva";
 export default function ClapTrap(props) {
   const { nodes } = useGLTF("./models/highpoly/cl4p.glb");
 
-  const { rimColor, fresnelAmount, rimAlpha, baseColor, animationSpeed, blinking, blinkSpeed, blinkingAlpha, flashing, flashSize, flashSpeed, flashingAlpha, scanlineDirection, flashlineDirection, intensity, colorAlpha, fadeProgress, fadeDirection, fadePatternSize, fadeOffset } = useControls(
+  const { rimColor, fresnelAmount, rimAlpha, baseColor, animationSpeed, blinking, blinkSpeed, blinkingAlpha, flashing, flashSize, flashSpeed, flashingAlpha, scanlineDirection, flashlineDirection, intensity, colorAlpha, fadeProgress, fadeDirection, fadePatternSize, fadeOffset, patternIntensity } = useControls(
     {
       rimColor:
       {
@@ -99,7 +99,7 @@ export default function ClapTrap(props) {
       {
         value: 1.7,
         min: 1,
-        max: 5,
+        max: 50,
         step: 0.1
       },
       colorAlpha:
@@ -123,16 +123,23 @@ export default function ClapTrap(props) {
       },
       fadePatternSize:
       {
-        value: 1,
-        min: 1,
-        max: 10,
+        value: 50,
+        min: 2,
+        max: 100,
         step: 0.01
       },
       fadeOffset:
       {
-        value: 2,
-        min: 1,
+        value: 3,
+        min: 2,
         max: 10,
+        step: 0.01
+      },
+      patternIntensity:
+      {
+        value: 20,
+        min: 1,
+        max: 50,
         step: 0.01
       }
     })
@@ -168,6 +175,7 @@ export default function ClapTrap(props) {
             fadeDirection={ fadeDirection }
             transitionPatternSize={ fadePatternSize }
             transitionSize={ fadeOffset }
+            patternIntensity={ patternIntensity }
           />
         </mesh>
         <mesh
@@ -197,6 +205,7 @@ export default function ClapTrap(props) {
               fadeDirection={ fadeDirection }
               transitionPatternSize={ fadePatternSize }
               transitionSize={ fadeOffset }
+              patternIntensity={ patternIntensity }
             />
         </mesh>
       </group>

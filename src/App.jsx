@@ -18,8 +18,9 @@ function App() {
       <Experience />
       <EffectComposer>
         <Bloom
-          luminanceThreshold={15}
+          luminanceThreshold={ 1.2 }
           luminanceSmoothing={ 0.9 }
+          mipmapBlur
         />
       </EffectComposer>
     </Canvas>
