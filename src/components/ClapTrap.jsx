@@ -14,7 +14,7 @@ import { useControls } from "leva";
 export default function ClapTrap(props) {
   const { nodes } = useGLTF("./models/highpoly/cl4p.glb");
 
-  const { rimColor, fresnelAmount, rimAlpha, baseColor, animationSpeed, blinking, blinkSpeed, blinkingAlpha, flashing, flashSize, flashSpeed, flashingAlpha, scanlineDirection, flashlineDirection, intensity, colorAlpha, fadeProgress } = useControls(
+  const { rimColor, fresnelAmount, rimAlpha, baseColor, animationSpeed, blinking, blinkSpeed, blinkingAlpha, flashing, flashSize, flashSpeed, flashingAlpha, scanlineDirection, flashlineDirection, intensity, colorAlpha, fadeProgress, fadeDirection, fadePatternSize, fadeOffset } = useControls(
     {
       rimColor:
       {
@@ -115,6 +115,25 @@ export default function ClapTrap(props) {
         min: 0,
         max: 1,
         step: 0.01
+      },
+      fadeDirection:
+      {
+        options: ['up', 'down'],
+        value: 'down'
+      },
+      fadePatternSize:
+      {
+        value: 1,
+        min: 1,
+        max: 10,
+        step: 0.01
+      },
+      fadeOffset:
+      {
+        value: 2,
+        min: 1,
+        max: 10,
+        step: 0.01
       }
     })
 
@@ -146,6 +165,9 @@ export default function ClapTrap(props) {
             colorIntensity={ intensity }
             colorAlpha={ colorAlpha }
             fadeAmount={ fadeProgress }
+            fadeDirection={ fadeDirection }
+            transitionPatternSize={ fadePatternSize }
+            transitionSize={ fadeOffset }
           />
         </mesh>
         <mesh
@@ -172,6 +194,9 @@ export default function ClapTrap(props) {
               colorIntensity={ intensity }
               colorAlpha={ colorAlpha }
               fadeAmount={ fadeProgress }
+              fadeDirection={ fadeDirection }
+              transitionPatternSize={ fadePatternSize }
+              transitionSize={ fadeOffset }
             />
         </mesh>
       </group>

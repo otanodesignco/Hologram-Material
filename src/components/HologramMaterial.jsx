@@ -21,7 +21,10 @@ export default function HologramMaterial({
     flashAlpha = 0.2, // alpha of flash between 0 - 1
     colorIntensity = 1, // fake bloom for cheaper draw calls
     colorAlpha = 1, // optional alpha for color
-    fadeAmount = 0 // animation amount to fade in
+    fadeAmount = 0, // animation amount to fade in
+    fadeDirection = 'top', // direction of the fade either top or bottom
+    transitionPatternSize = 10, // size of pattern size
+    transitionSize = 0.01 // size of the transition offset
 })
 {
     // shader uniforms
@@ -42,7 +45,9 @@ export default function HologramMaterial({
         uFlashAlpha: flashAlpha,
         uIntensity: colorIntensity,
         uAlpha: colorAlpha,
-        uProgress: fadeAmount
+        uProgress: fadeAmount,
+        uPatternSize: transitionPatternSize,
+        uFadeSize: transitionSize
     }
 
     // handle direction logic for scanlines here
@@ -82,6 +87,23 @@ export default function HologramMaterial({
     {
         // default direction
         FlashlineDirection = 1
+    }
+
+    let transitionDirection = 1 // defaults to top down
+
+    switch( fadeDirection.toLowerCase() )
+    {
+        case 'up':
+            transitionDirection = 1
+        break;
+
+        case 'down':
+            transitionDirection = 0
+        break;
+
+        default:
+            transitionDirection = 1
+        break;
     }
 
     // vertex shader code
@@ -138,6 +160,8 @@ export default function HologramMaterial({
     uniform float uIntensity;
     uniform float uAlpha;
     uniform float uProgress;
+    uniform float uPatternSize;
+    uniform float uFadeSize;
 
     in vec3 vObjectPosition;
     in vec2 vUv;
@@ -173,14 +197,32 @@ export default function HologramMaterial({
         return min2 + (value - min1) * (max2 - min2) / (max1 - min1);
     }
 
+    float random(vec2 coords)
+    {
+        return fract( sin( dot( coords, vec2( 12.9898, 78.233 ) ) ) * 43758.5453123 );
+    }
+
     void main()
     {
 
         vec2 uv = gl_FragCoord.xy / uResolution; // view space coords
 
-        vec2 objectUv = vec2( map( vObjectPosition.x, 0.0, 1.0, 0.55, 0.9 ), map( vObjectPosition.y, 0.0, 1.0, 0.55, 0.9 ) ); // corrected positon coordinates for transitons
+        vec2 objectUv = vObjectUV * 0.45 + 0.5; // corrected positon coordinates for transitons
 
-        float objectYPosition = step( uProgress, objectUv.y );
+        /** 
+         * 
+         *  Transition
+         * 
+        */
+        float squares =  step( 0.7, random( floor( vUv * uPatternSize ) * uProgress ) );
+        float direction =  ${ transitionDirection === 1 ? 'objectUv.y': '1.0 - objectUv.y' };
+        float transitionRing = step( direction - ( uFadeSize * 0.01 ), uProgress ) * squares;
+        vec3 transitionColor = uFresnelColor * uIntensity;
+        transitionColor *= transitionRing;
+
+        
+
+        float objectYPosition = step( uProgress, direction );
 
         float colorAlpha = clamp( uAlpha, 0., 1. );
 
@@ -227,6 +269,10 @@ export default function HologramMaterial({
 
         // flashing layer, hidden by default
         ${ !flashLine ? '': 'finalColor = mix( finalColor, flashColor, flash * clamp( uFlashAlpha, 0., 1. ) );' }
+
+        // transition layer
+
+        finalColor = mix( finalColor,transitionColor , transitionRing );
 
         gl_FragColor = vec4( finalColor * uIntensity , objectYPosition * colorAlpha * scanlinesAlpha );
     }
