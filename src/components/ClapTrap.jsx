@@ -176,6 +176,7 @@ export default function ClapTrap(props) {
             transitionPatternSize={ fadePatternSize }
             transitionSize={ fadeOffset }
             patternIntensity={ patternIntensity }
+            side="both"
           />
         </mesh>
         <mesh
@@ -206,6 +207,7 @@ export default function ClapTrap(props) {
               transitionPatternSize={ fadePatternSize }
               transitionSize={ fadeOffset }
               patternIntensity={ patternIntensity }
+              side="both"
             />
         </mesh>
       </group>

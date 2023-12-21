@@ -25,7 +25,8 @@ export default function HologramMaterial({
     fadeDirection = 'top', // direction of the fade either top or bottom
     transitionPatternSize = 10, // size of pattern size
     patternIntensity = 20, // for bloom
-    transitionSize = 0.01 // size of the transition offset
+    transitionSize = 0.01, // size of the transition offset
+    side = 'front' // render side
 })
 {
     // shader uniforms
@@ -106,6 +107,29 @@ export default function HologramMaterial({
         default:
             transitionDirection = 1
         break;
+    }
+
+    // handle the side to render
+    let renderSide = FrontSide
+
+    switch( side.toLowerCase() )
+    {
+        case 'front':
+            renderSide = FrontSide
+        break;
+
+        case 'back':
+                renderSide = BackSide
+        break;
+
+        case 'both':
+            renderSide = DoubleSide
+        break;
+
+        default:
+            renderSide = FrontSide
+        break;
+
     }
 
     // vertex shader code
@@ -210,7 +234,7 @@ export default function HologramMaterial({
 
         vec2 uv = gl_FragCoord.xy / uResolution; // view space coords
 
-        vec2 objectUv = vObjectUV * 0.45 + 0.5; // corrected positon coordinates for transitons
+        vec2 objectUv = vObjectUV * 0.44 + 0.5; // corrected positon coordinates for transitons
 
         /** 
          * 
@@ -219,6 +243,10 @@ export default function HologramMaterial({
         */
         float squares =  step( 0.7, random( floor( vUv * uPatternSize ) * uProgress ) );
         float direction =  ${ transitionDirection === 1 ? 'objectUv.y': '1.0 - objectUv.y' };
+
+        // discard fragment if not visible
+        if( direction - uProgress < 0.0 ) discard;
+        // transition ring and color
         float transitionRing = step( direction - ( uFadeSize * 0.01 ), uProgress ) * squares;
         vec3 transitionColor = uPatternColor;
         transitionColor *= transitionRing;
@@ -302,7 +330,7 @@ export default function HologramMaterial({
         <hologramMaterial
             key={ HologramMaterial.key }
             transparent={ true }
-            side={ FrontSide }
+            side={ renderSide }
             ref={ holoRef }
         />
     )
