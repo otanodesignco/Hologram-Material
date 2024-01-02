@@ -14,7 +14,7 @@ import { useControls } from "leva";
 export default function ClapTrap(props) {
   const { nodes } = useGLTF("./models/highpoly/cl4p.glb");
 
-  const { rimColor, fresnelAmount, rimAlpha, baseColor, animationSpeed, blinking, blinkSpeed, blinkingAlpha, flashing, flashSize, flashSpeed, flashingAlpha, scanlineDirection, flashlineDirection, intensity, colorAlpha, fadeProgress, fadeDirection, fadePatternSize, fadeOffset, patternIntensity } = useControls(
+  const { rimColor, fresnelAmount, rimAlpha, baseColor, animationSpeed, blinking, blinkSpeed, blinkingAlpha, flashing, flashSize, flashSpeed, flashingAlpha, scanlineDirection, flashlineDirection, intensity, colorAlpha, fadeProgress, fadeDirection, fadePatternSize, fadeOffset, patternIntensity, wobbleSpeed, wobbleSize } = useControls(
     {
       rimColor:
       {
@@ -141,6 +141,20 @@ export default function ClapTrap(props) {
         min: 1,
         max: 50,
         step: 0.01
+      },
+      wobbleSpeed:
+      {
+        value: 10,
+        min: 1,
+        max: 30,
+        step: 0.01
+      },
+      wobbleSize:
+      {
+        value: 4,
+        min: 1,
+        max: 20,
+        step: 0.01
       }
     })
 
@@ -177,6 +191,8 @@ export default function ClapTrap(props) {
             transitionSize={ fadeOffset }
             patternIntensity={ patternIntensity }
             side="both"
+            wobbleSpeed={ wobbleSpeed }
+            wobbleSize={ wobbleSize }
           />
         </mesh>
         <mesh
@@ -208,6 +224,8 @@ export default function ClapTrap(props) {
               transitionSize={ fadeOffset }
               patternIntensity={ patternIntensity }
               side="both"
+              wobbleSpeed={ wobbleSpeed }
+              wobbleSize={ wobbleSize }
             />
         </mesh>
       </group>

@@ -26,7 +26,9 @@ export default function HologramMaterial({
     transitionPatternSize = 10, // size of pattern size
     patternIntensity = 20, // for bloom
     transitionSize = 0.01, // size of the transition offset
-    side = 'front' // render side
+    side = 'front', // render side
+    wobbleSpeed = 10, // speed of the wobble
+    wobbleSize = 5, // size of the wobble
 })
 {
     // shader uniforms
@@ -50,7 +52,10 @@ export default function HologramMaterial({
         uProgress: fadeAmount,
         uPatternSize: transitionPatternSize,
         uPatternColor: new Color( fresnelColor ).multiplyScalar( patternIntensity ),
-        uFadeSize: transitionSize
+        uFadeSize: transitionSize,
+        uRandomSeed: 0,
+        uWobbleSpeed: wobbleSpeed,
+        uWobbleSize : wobbleSize,
     }
 
     // handle direction logic for scanlines here
@@ -137,6 +142,9 @@ export default function HologramMaterial({
 
     uniform vec2 uResolution;
     uniform float uTime;
+    uniform float uRandomSeed;
+    uniform float uWobbleSpeed;
+    uniform float uWobbleSize;
 
     out vec3 vObjectPosition;
     out vec2 vUv;
@@ -144,6 +152,16 @@ export default function HologramMaterial({
     out vec3 vNormal;
     out vec2 vObjectUV;
 
+    vec3 wobble( float time, float speed, float size, vec3 position )
+    {
+        vec3 vertices = position;
+        float distortion = sin( time * speed + vertices.y * 20. ) * (size * 0.01 );
+        float wobble = step( uRandomSeed, 1.0 );
+
+        vertices.x += distortion * wobble;
+
+        return vertices;
+    }
 
     void main()
     {
@@ -157,11 +175,14 @@ export default function HologramMaterial({
 
     vObjectPosition = worldPosition.xyz;
 
+    // wobble distortion
+    vec3 newPosition = wobble( uTime, uWobbleSpeed, uWobbleSize, position );
+
     vUv = uv;
     vView = normalize( cameraPosition - worldPosition.xyz );
     vNormal = normalize( worldNormal.xyz );
 
-    gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+    gl_Position = projectionMatrix * modelViewMatrix * vec4( newPosition, 1.0 );
 
     }
 
@@ -321,6 +342,9 @@ export default function HologramMaterial({
     {
         // assign time uniform to the delta value
         holoRef.current.uniforms.uTime.value += delta
+        holoRef.current.uniforms.uRandomSeed.value = Math.random( delta )
+
+        console.log( holoRef.current.uniforms.uRandomSeed.value )
     } )
 
     const holoRef = useRef()
