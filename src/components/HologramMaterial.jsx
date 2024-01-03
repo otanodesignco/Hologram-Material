@@ -156,7 +156,7 @@ export default function HologramMaterial({
     {
         vec3 vertices = position;
         float distortion = sin( time * speed + vertices.y * 20. ) * (size * 0.01 );
-        float wobble = step( uRandomSeed, 1.0 );
+        float wobble = step( uRandomSeed, 0.05 );
 
         vertices.x += distortion * wobble;
 
