@@ -27,8 +27,10 @@ export default function HologramMaterial({
     patternIntensity = 20, // for bloom
     transitionSize = 0.01, // size of the transition offset
     side = 'front', // render side
+    wobble = false, // wobble enabled
     wobbleSpeed = 10, // speed of the wobble
     wobbleSize = 5, // size of the wobble
+    wobbleRandomOffset = 5, // offset for random animation
 })
 {
     // shader uniforms
@@ -56,6 +58,7 @@ export default function HologramMaterial({
         uRandomSeed: 0,
         uWobbleSpeed: wobbleSpeed,
         uWobbleSize : wobbleSize,
+        uWobbleRandomOffset: wobbleRandomOffset,
     }
 
     // handle direction logic for scanlines here
@@ -145,6 +148,7 @@ export default function HologramMaterial({
     uniform float uRandomSeed;
     uniform float uWobbleSpeed;
     uniform float uWobbleSize;
+    uniform float uWobbleRandomOffset;
 
     out vec3 vObjectPosition;
     out vec2 vUv;
@@ -152,11 +156,12 @@ export default function HologramMaterial({
     out vec3 vNormal;
     out vec2 vObjectUV;
 
-    vec3 wobble( float time, float speed, float size, vec3 position )
+    vec3 wobble( float time, float speed, float size, vec3 position, float randomOffset )
     {
         vec3 vertices = position;
+        randomOffset *= 0.001;
         float distortion = sin( time * speed + vertices.y * 20. ) * (size * 0.01 );
-        float wobble = step( uRandomSeed, 0.05 );
+        float wobble = step( uRandomSeed, randomOffset );
 
         vertices.x += distortion * wobble;
 
@@ -176,7 +181,7 @@ export default function HologramMaterial({
     vObjectPosition = worldPosition.xyz;
 
     // wobble distortion
-    vec3 newPosition = wobble( uTime, uWobbleSpeed, uWobbleSize, position );
+    vec3 newPosition = ${ !wobble  ? 'position;' : 'wobble( uTime, uWobbleSpeed, uWobbleSize, position, uWobbleRandomOffset );' }
 
     vUv = uv;
     vView = normalize( cameraPosition - worldPosition.xyz );

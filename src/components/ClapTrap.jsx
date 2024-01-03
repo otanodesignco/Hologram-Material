@@ -14,7 +14,7 @@ import { useControls } from "leva";
 export default function ClapTrap(props) {
   const { nodes } = useGLTF("./models/highpoly/cl4p.glb");
 
-  const { rimColor, fresnelAmount, rimAlpha, baseColor, animationSpeed, blinking, blinkSpeed, blinkingAlpha, flashing, flashSize, flashSpeed, flashingAlpha, scanlineDirection, flashlineDirection, intensity, colorAlpha, fadeProgress, fadeDirection, fadePatternSize, fadeOffset, patternIntensity, wobbleSpeed, wobbleSize } = useControls(
+  const { rimColor, fresnelAmount, rimAlpha, baseColor, animationSpeed, blinking, blinkSpeed, blinkingAlpha, flashing, flashSize, flashSpeed, flashingAlpha, scanlineDirection, flashlineDirection, intensity, colorAlpha, fadeProgress, fadeDirection, fadePatternSize, fadeOffset, patternIntensity, wobble, wobbleSpeed, wobbleSize, wobbleRandomOffset } = useControls(
     {
       rimColor:
       {
@@ -142,6 +142,10 @@ export default function ClapTrap(props) {
         max: 50,
         step: 0.01
       },
+      wobble:
+      {
+        value: true
+      },
       wobbleSpeed:
       {
         value: 10,
@@ -154,6 +158,13 @@ export default function ClapTrap(props) {
         value: 4,
         min: 1,
         max: 20,
+        step: 0.01
+      },
+      wobbleRandomOffset:
+      {
+        value: 5,
+        min: 2,
+        max: 50,
         step: 0.01
       }
     })
@@ -193,6 +204,8 @@ export default function ClapTrap(props) {
             side="both"
             wobbleSpeed={ wobbleSpeed }
             wobbleSize={ wobbleSize }
+            wobbleRandomOffset={ wobbleRandomOffset }
+            wobble={ wobble }
           />
         </mesh>
         <mesh
@@ -226,6 +239,8 @@ export default function ClapTrap(props) {
               side="both"
               wobbleSpeed={ wobbleSpeed }
               wobbleSize={ wobbleSize }
+              wobbleRandomOffset={ wobbleRandomOffset }
+              wobble={ wobble }
             />
         </mesh>
       </group>
